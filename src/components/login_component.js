@@ -1,4 +1,4 @@
-import React, { Component, useState } from "react";
+import React, { useState } from "react";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -8,7 +8,7 @@ export default function Login() {
     e.preventDefault();
 
     console.log(email, password);
-    fetch("http://localhost:5000/login-user", {
+    fetch("http://localhost:3000/login-user", {
       method: "POST",
       crossDomain: true,
       headers: {
@@ -24,7 +24,7 @@ export default function Login() {
       .then((res) => res.json())
       .then((data) => {
         console.log(data, "userRegister");
-        if (data.status == "ok") {
+        if (data.status === "ok") {
           alert("login successful");
           window.localStorage.setItem("token", data.data);
           window.localStorage.setItem("loggedIn", true);
@@ -86,3 +86,5 @@ export default function Login() {
     </div>
   );
 }
+
+

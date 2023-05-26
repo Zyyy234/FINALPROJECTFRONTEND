@@ -1,6 +1,5 @@
-import React, { Component, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import AdminHome from "./adminHome";
-
 import UserHome from "./userHome";
 
 export default function UserDetails() {
@@ -8,7 +7,7 @@ export default function UserDetails() {
   const [admin, setAdmin] = useState(false);
 
   useEffect(() => {
-    fetch("http://localhost:5000/userData", {
+    fetch("http://localhost:3000/userData", {
       method: "POST",
       crossDomain: true,
       headers: {
@@ -23,14 +22,14 @@ export default function UserDetails() {
       .then((res) => res.json())
       .then((data) => {
         console.log(data, "userData");
-        if (data.data.userType == "Admin") {
+        if (data && data.data && data.data.userType === "Admin") {
           setAdmin(true);
         }
 
         setUserData(data.data);
 
-        if (data.data == "token expired") {
-          alert("Token expired login again");
+        if (data.data === "token expired") {
+          alert("Token expired, please login again");
           window.localStorage.clear();
           window.location.href = "./sign-in";
         }

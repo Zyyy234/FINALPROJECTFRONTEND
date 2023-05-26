@@ -3,6 +3,10 @@ import React, { useState } from "react";
 export default function SignUp() {
   const [fname, setFname] = useState("");
   const [lname, setLname] = useState("");
+  const [position, setPosition] = useState("");
+  const [gender, setGender] = useState("");
+  const [address, setAddress] = useState("");
+  const [contactNumber, setContactNumber] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [userType, setUserType] = useState("");
@@ -26,11 +30,16 @@ export default function SignUp() {
         },
         body: JSON.stringify({
           fname,
-          email,
           lname,
+          email,
           password,
           userType,
+          position,
+          gender,
+          address,
+          contactNumber,
         }),
+        
       })
         .then((res) => res.json())
         .then((data) => {
@@ -97,6 +106,47 @@ export default function SignUp() {
               onChange={(e) => setLname(e.target.value)}
             />
           </div>
+
+          <div className="mb-3">
+            <label>Position</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Enter position"
+              onChange={(e) => setPosition(e.target.value)}
+            />
+          </div>
+
+          <div className="mb-3">
+            <label>Gender</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Enter gender"
+              onChange={(e) => setGender(e.target.value)}
+            />
+          </div>
+
+          <div className="mb-3">
+            <label>Address</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Enter address"
+              onChange={(e) => setAddress(e.target.value)}
+            />
+          </div>
+
+          <div className="mb-3">
+            <label>Contact Number</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Enter contact number"
+              onChange={(e) => setContactNumber(e.target.value)}
+            />
+          </div>
+
 
           <div className="mb-3">
             <label>Email address</label>
