@@ -37,4 +37,4 @@ export default function UserDetails() {
   }, []);
 
   return admin ? <AdminHome /> : <UserHome userData={userData} />;
-}
+} 

@@ -1,28 +1,25 @@
-import React, { Component, useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import ReactPaginate from 'react-paginate';
-import { useRef } from "react";
+import ReactPaginate from "react-paginate";
+
 export default function AdminHome({ userData }) {
-
-  //setting state
   const [data, setData] = useState([]);
-  const [limit,setLimit]=useState(5);
-  const [pageCount,setPageCount]=useState(1);
-  const currentPage=useRef();
-
-
+  const [limit, setLimit] = useState(5);
+  const [pageCount, setPageCount] = useState(1);
+  const currentPage = useRef();
 
   useEffect(() => {
-    currentPage.current=1;
-    // getAllUser();
+    currentPage.current = 1;
     getPaginatedUsers();
   }, []);
 
+  useEffect(() => {
+    getAllUser();
+  }, []);
 
-  //fetching all user
   const getAllUser = () => {
-    fetch("http://localhost:5000/getAllUser", {
+    fetch("http://localhost:3000/getAllUser", {
       method: "GET",
     })
       .then((res) => res.json())
@@ -32,19 +29,31 @@ export default function AdminHome({ userData }) {
       });
   };
 
-
-
-//logout
-  const logOut = () => {
-    window.localStorage.clear();
-    window.location.href = "./sign-in";
+  const getPaginatedUsers = () => {
+    fetch(`http://localhost:3000/paginatedUsers`, {
+      method: "GET",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data, "userData");
+        setPageCount(data.pageCount);
+        setData(data.result);
+      });
   };
 
+  const handlePageClick = (e) => {
+    currentPage.current = e.selected + 1;
+    getPaginatedUsers();
+  };
 
-  //deleting user
+  const changeLimit = () => {
+    currentPage.current = 1;
+    getPaginatedUsers();
+  };
+
   const deleteUser = (id, name) => {
     if (window.confirm(`Are you sure you want to delete ${name}`)) {
-      fetch("http://localhost:5000/deleteUser", {
+      fetch("http://localhost:3000/deleteUser", {
         method: "POST",
         crossDomain: true,
         headers: {
@@ -65,61 +74,41 @@ export default function AdminHome({ userData }) {
     }
   };
 
-  //pagination
-  function handlePageClick(e) {
-    console.log(e);
-   currentPage.current=e.selected+1;
-    getPaginatedUsers();
-   
-
-  }
-  function changeLimit(){
-    currentPage.current=1;
-    getPaginatedUsers();
-  }
-
-  function getPaginatedUsers(){
-    fetch(`http://localhost:5000/paginatedUsers?page=${currentPage.current}&limit=${limit}`, {
-      method: "GET",
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data, "userData");
-        setPageCount(data.pageCount);
-        setData(data.result)
-        
-       
-      });
-
-  }
+  const logOut = () => {
+    window.localStorage.clear();
+    window.location.href = "./sign-in";
+  };
 
   return (
     <div className="auth-wrapper" style={{ height: "auto" }}>
       <div className="auth-inner" style={{ width: "auto" }}>
-        <h3>Welcom Admin</h3>
+        <h3>Welcome Admin</h3>
         <table style={{ width: 500 }}>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>User Type</th>
-            <th>Delete</th>
-          </tr>
-          {data.map((i) => {
-            return (
-              <tr>
-                <td>{i.fname}</td>
-                <td>{i.email}</td>
-                <td>{i.userType}</td>
-                <td>
-                  <FontAwesomeIcon
-                    icon={faTrash}
-                    onClick={() => deleteUser(i._id, i.fname)}
-                  />
-                </td>
-              </tr>
-            );
-          })}
+          <tbody>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>User Type</th>
+              <th>Delete</th>
+            </tr>
+            {data.map((i) => {
+              return (
+                <tr key={i._id}>
+                  <td>{i.fname}</td>
+                  <td>{i.email}</td>
+                  <td>{i.userType}</td>
+                  <td>
+                    <FontAwesomeIcon
+                      icon={faTrash}
+                      onClick={() => deleteUser(i._id, i.fname)}
+                    />
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
         </table>
+
         <ReactPaginate
           breakLabel="..."
           nextLabel="next >"
@@ -137,9 +126,9 @@ export default function AdminHome({ userData }) {
           nextClassName="page-item"
           nextLinkClassName="page-link"
           activeClassName="active"
-          forcePage={currentPage.current-1}
+          forcePage={currentPage.current - 1}
         />
-        <input placeholder="Limit" onChange={e=>setLimit(e.target.value)}/>
+        <input placeholder="Limit" onChange={(e) => setLimit(e.target.value)} />
         <button onClick={changeLimit}>Set Limit</button>
         <button onClick={logOut} className="btn btn-primary">
           Log Out
