@@ -3,7 +3,8 @@ import React, { useState } from "react";
 export default function SignUp() {
   const [fname, setFname] = useState("");
   const [lname, setLname] = useState("");
-  const [position, setPosition] = useState("");
+  const [disabilityType, setDisabilityType] = useState("");
+  const [skill, setSkill] = useState("");
   const [gender, setGender] = useState("");
   const [address, setAddress] = useState("");
   const [contactNumber, setContactNumber] = useState("");
@@ -34,18 +35,19 @@ export default function SignUp() {
           email,
           password,
           userType,
-          position,
+          disabilityType: userType === "Admin" ? "" : disabilityType,
+          skill: userType === "Admin" ? "" : skill,
           gender,
           address,
           contactNumber,
         }),
-        
       })
         .then((res) => res.json())
         .then((data) => {
           console.log(data, "userRegister");
           if (data.status === "ok") {
             alert("Registration Successful");
+            window.location.href = "/sign-in"; // Navigate to the sign-in page
           } else {
             alert("Something went wrong");
           }
@@ -56,7 +58,7 @@ export default function SignUp() {
   return (
     <div className="auth-wrapper">
       <div className="auth-inner">
-        <form onSubmit={handleSubmit}>
+        <form className="signup-form" onSubmit={handleSubmit}>
           <h3>Sign Up</h3>
           <div>
             Register As
@@ -107,15 +109,29 @@ export default function SignUp() {
             />
           </div>
 
-          <div className="mb-3">
-            <label>Position</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Enter position"
-              onChange={(e) => setPosition(e.target.value)}
-            />
-          </div>
+          {userType !== "Admin" && (
+            <>
+              <div className="mb-3">
+                <label>Disability Type</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Enter Disability Type"
+                  onChange={(e) => setDisabilityType(e.target.value)}
+                />
+              </div>
+
+              <div className="mb-3">
+                <label>Skill</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Enter Skill"
+                  onChange={(e) => setSkill(e.target.value)}
+                />
+              </div>
+            </>
+          )}
 
           <div className="mb-3">
             <label>Gender</label>
@@ -146,7 +162,6 @@ export default function SignUp() {
               onChange={(e) => setContactNumber(e.target.value)}
             />
           </div>
-
 
           <div className="mb-3">
             <label>Email address</label>

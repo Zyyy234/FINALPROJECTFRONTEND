@@ -1,18 +1,8 @@
-import React, { useEffect, useState, useRef } from "react";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import ReactPaginate from "react-paginate";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function AdminHome({ userData }) {
   const [data, setData] = useState([]);
-  const [limit, setLimit] = useState(5);
-  const [pageCount, setPageCount] = useState(1);
-  const currentPage = useRef();
-
-  useEffect(() => {
-    currentPage.current = 1;
-    getPaginatedUsers();
-  }, []);
 
   useEffect(() => {
     getAllUser();
@@ -29,30 +19,13 @@ export default function AdminHome({ userData }) {
       });
   };
 
-  const getPaginatedUsers = () => {
-    fetch(`http://localhost:3000/paginatedUsers`, {
-      method: "GET",
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data, "userData");
-        setPageCount(data.pageCount);
-        setData(data.result);
-      });
+  const updateUser = (_id) => {
+    window.localStorage.clear();
+    window.location.href = `/updateUser/${_id}`;
   };
 
-  const handlePageClick = (e) => {
-    currentPage.current = e.selected + 1;
-    getPaginatedUsers();
-  };
-
-  const changeLimit = () => {
-    currentPage.current = 1;
-    getPaginatedUsers();
-  };
-
-  const deleteUser = (id, name) => {
-    if (window.confirm(`Are you sure you want to delete ${name}`)) {
+  const deleteUser = (id, ID) => {
+    if (window.confirm(`Are you sure you want to delete ${ID}`)) {
       fetch("http://localhost:3000/deleteUser", {
         method: "POST",
         crossDomain: true,
@@ -70,7 +43,6 @@ export default function AdminHome({ userData }) {
           alert(data.data);
           getAllUser();
         });
-    } else {
     }
   };
 
@@ -80,56 +52,60 @@ export default function AdminHome({ userData }) {
   };
 
   return (
-    <div className="auth-wrapper" style={{ height: "auto" }}>
+    <div className="d-flex flex-column justify-content-center align-items-center">
       <div className="auth-inner" style={{ width: "auto" }}>
         <h3>Welcome Admin</h3>
-        <table style={{ width: 500 }}>
-          <tbody>
+        <h3>User Data</h3>
+        <div className="d-flex justify-content-end">
+          <Link to="/sign-up" className="btn btn-info">
+            Add User +
+          </Link>
+        </div>
+        <table style={{ width: 600 }}>
+          <thead>
             <tr>
-              <th>Name</th>
+              <th>ID</th>
+              <th>Firstname</th>
+              <th>Lastname</th>
+              <th>Position</th>
+              <th>Gender</th>
+              <th>Address</th>
+              <th>Contact No.</th>
               <th>Email</th>
               <th>User Type</th>
-              <th>Delete</th>
+              <th>Action</th>
             </tr>
-            {data.map((i) => {
-              return (
-                <tr key={i._id}>
-                  <td>{i.fname}</td>
-                  <td>{i.email}</td>
-                  <td>{i.userType}</td>
-                  <td>
-                    <FontAwesomeIcon
-                      icon={faTrash}
-                      onClick={() => deleteUser(i._id, i.fname)}
-                    />
-                  </td>
-                </tr>
-              );
-            })}
+          </thead>
+          <tbody>
+            {data.map((i) => (
+              <tr key={i._id}>
+                <td>{i.ID}</td>
+                <td>{i.fname}</td>
+                <td>{i.lname}</td>
+                <td>{i.position}</td>
+                <td>{i.gender}</td>
+                <td>{i.address}</td>
+                <td>{i.contactNumber}</td>
+                <td>{i.email}</td>
+                <td>{i.userType}</td>
+                <td>
+                  <button
+                    onClick={() => updateUser(i._id)}
+                    className="btn btn-success btn-sm"
+                  >
+                    Update
+                  </button>
+                  <button
+                    onClick={() => deleteUser(i._id, i.ID)}
+                    className="btn btn-danger btn-sm"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
-
-        <ReactPaginate
-          breakLabel="..."
-          nextLabel="next >"
-          onPageChange={handlePageClick}
-          pageRangeDisplayed={5}
-          pageCount={pageCount}
-          previousLabel="< previous"
-          renderOnZeroPageCount={null}
-          marginPagesDisplayed={2}
-          containerClassName="pagination justify-content-center"
-          pageClassName="page-item"
-          pageLinkClassName="page-link"
-          previousClassName="page-item"
-          previousLinkClassName="page-link"
-          nextClassName="page-item"
-          nextLinkClassName="page-link"
-          activeClassName="active"
-          forcePage={currentPage.current - 1}
-        />
-        <input placeholder="Limit" onChange={(e) => setLimit(e.target.value)} />
-        <button onClick={changeLimit}>Set Limit</button>
         <button onClick={logOut} className="btn btn-primary">
           Log Out
         </button>
@@ -137,3 +113,7 @@ export default function AdminHome({ userData }) {
     </div>
   );
 }
+
+
+
+
